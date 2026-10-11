@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* High-Contrast Pristine SaaS Light Mode */
+  --sentinel-950: 248 250 252; /* slate-50 */
+  --sentinel-900: 255 255 255; /* pure white surface */
+  --sentinel-850: 241 245 249; /* slate-100 */
+  --sentinel-800: 226 232 240; /* slate-200 border */
+  --sentinel-700: 203 213 225; /* slate-300 */
+  --sentinel-600: 148 163 184; /* slate-400 */
+}
+
+.dark {
+  /* Deep Navy & Charcoal Futuristic Cyber Dark Mode */
+  --sentinel-950: 7 10 18;     /* #070A12 */
+  --sentinel-900: 11 15 25;    /* #0B0F19 */
+  --sentinel-850: 16 21 36;    /* #101524 */
+  --sentinel-800: 22 29 47;    /* #161D2F */
+  --sentinel-700: 34 44 68;    /* #222C44 */
+  --sentinel-600: 50 64 96;    /* #324060 */
+}
+
+@layer base {
+  body {
+    @apply bg-sentinel-950 text-slate-900 dark:text-slate-100 antialiased font-sans transition-colors duration-200;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+/* Light Theme Contrast Refinements */
+html:not(.dark) {
+  color-scheme: light;
+}
+
+html:not(.dark) .text-white {
+  color: #0f172a; /* slate-900 */
+}
+
+html:not(.dark) .text-slate-100 {
+  color: #0f172a;
+}
+
+html:not(.dark) .text-slate-200 {
+  color: #1e293b; /* slate-800 */
+}
+
+html:not(.dark) .text-slate-300 {
+  color: #334155; /* slate-700 */
+}
+
+html:not(.dark) .text-slate-400 {
+  color: #475569; /* slate-600 */
+}
+
+/* Glassmorphism surfaces in light mode */
+html:not(.dark) .bg-sentinel-900\/80,
+html:not(.dark) .bg-sentinel-900\/70,
+html:not(.dark) .bg-sentinel-900\/60,
+html:not(.dark) .bg-sentinel-900\/40 {
+  background-color: rgba(255, 255, 255, 0.92);
+}
+
+html:not(.dark) .bg-sentinel-950\/80,
+html:not(.dark) .bg-sentinel-950\/70,
+html:not(.dark) .bg-sentinel-950\/60 {
+  background-color: rgba(241, 245, 249, 0.95);
+}
+
+/* Custom subtle scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #324060;
+  border-radius: 9999px;
+}
+
+html:not(.dark) ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3B82F6;
+}
+
+/* Print Styles for Portfolio Export */
+@media print {
+  header, footer, button, .command-palette-trigger {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+}
