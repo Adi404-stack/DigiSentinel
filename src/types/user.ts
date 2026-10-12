@@ -2,6 +2,16 @@ import { AssessmentRubric } from './skills';
 import { MissionId } from './missions';
 
 export type SupportedLanguage = 'en' | 'hi' | 'mr';
+export type FontSize = 'sm' | 'md' | 'lg' | 'xl';
+
+export type UserAudienceCategory =
+  | 'student'
+  | 'farmer'
+  | 'business_owner'
+  | 'corporate_employee'
+  | 'job_seeker'
+  | 'general_learner'
+  | 'custom';
 
 export interface PortfolioEntry {
   id: string;
@@ -29,10 +39,16 @@ export interface Achievement {
 
 export interface UserPreferences {
   language: SupportedLanguage;
+  fontSize: FontSize;
   reducedMotion: boolean;
   theme: 'dark' | 'light';
   isSimulatedMode: boolean; // clearly distinguishes live simulated lab from external production
   soundEffects: boolean;
+  audienceCategory?: UserAudienceCategory;
+  learningGoal?: string;
+  experienceLevel?: 'beginner' | 'intermediate' | 'advanced';
+  explanationPreference?: 'beginner_friendly' | 'advanced';
+  hasCompletedOnboarding?: boolean;
 }
 
 export interface UserProfile {

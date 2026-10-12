@@ -26,10 +26,13 @@ const DEFAULT_PROFILE: UserProfile = {
   joinedAt: '2026-09-15T00:00:00.000Z',
   preferences: {
     language: 'en',
+    fontSize: 'md',
     reducedMotion: false,
     theme: 'dark',
     isSimulatedMode: true,
-    soundEffects: true
+    soundEffects: true,
+    audienceCategory: 'student',
+    hasCompletedOnboarding: false
   },
   achievements: INITIAL_ACHIEVEMENTS.map(a => 
     a.id === 'ach_sentinel_initiate' ? { ...a, unlockedAt: '2026-09-16T12:00:00Z' } : a
@@ -64,7 +67,17 @@ export class StorageService {
   public static getProfile(): UserProfile {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.USER_PROFILE);
-      if (data) return JSON.parse(data);
+      if (data) {
+        const parsed = JSON.parse(data);
+        return {
+          ...DEFAULT_PROFILE,
+          ...parsed,
+          preferences: {
+            ...DEFAULT_PROFILE.preferences,
+            ...(parsed.preferences || {})
+          }
+        };
+      }
     } catch (e) {
       console.warn('Failed to parse profile from storage, using default', e);
     }

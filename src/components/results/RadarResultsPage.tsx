@@ -21,10 +21,11 @@ import {
 import { useApp } from '../../context/AppContext';
 import { SKILL_DOMAINS } from '../../data/taxonomy';
 import { MISSIONS } from '../../data/missionsData';
+import { RecommendationEngine } from '../../services/recommendationEngine';
 import { Badge } from '../common/Badge';
 
 export const RadarResultsPage: React.FC = () => {
-  const { diagnosticResult, resetDiagnostic, navigateTo, startMission } = useApp();
+  const { diagnosticResult, diagnosticSubmissions, resetDiagnostic, navigateTo, startMission, theme } = useApp();
 
   if (!diagnosticResult) {
     return (
@@ -82,9 +83,9 @@ export const RadarResultsPage: React.FC = () => {
           <div className="h-[320px] w-full pt-4">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart data={chartData} cx="50%" cy="50%" outerRadius="80%">
-                <PolarGrid stroke="#222C44" />
-                <PolarAngleAxis dataKey="domain" stroke="#7E95C4" tick={{ fontSize: 11 }} />
-                <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="#324060" />
+                <PolarGrid stroke={theme === 'dark' ? '#222C44' : '#E2E8F0'} />
+                <PolarAngleAxis dataKey="domain" stroke={theme === 'dark' ? '#7E95C4' : '#475569'} tick={{ fontSize: 11 }} />
+                <PolarRadiusAxis angle={30} domain={[0, 100]} stroke={theme === 'dark' ? '#324060' : '#94A3B8'} />
                 <Radar
                   name="Demonstrated Score"
                   dataKey="score"
@@ -201,6 +202,69 @@ export const RadarResultsPage: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Explainable Skill Gap Recommendations */}
+      {(() => {
+        const recommendations = RecommendationEngine.generateExplainableRecommendations(
+          diagnosticSubmissions,
+          diagnosticResult
+        );
+        return (
+          <div className="p-6 sm:p-8 rounded-3xl bg-sentinel-900/80 border border-sentinel-800 space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-sentinel-850">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-cyan-400" />
+                <h3 className="text-base font-bold text-white font-display">
+                  Explainable Skill Gap Recommendations
+                </h3>
+              </div>
+              <span className="text-[11px] font-mono text-cyan-400">
+                Rule-Based Inference Engine
+              </span>
+            </div>
+
+            <div className="space-y-4">
+              {recommendations.map(rec => (
+                <div
+                  key={rec.id}
+                  className="p-5 rounded-2xl bg-sentinel-950 border border-sentinel-850 space-y-2 text-xs leading-relaxed"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="font-bold text-white text-sm">{rec.category}</span>
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
+                      rec.severity === 'high' ? 'bg-rose-500/10 text-rose-300 border border-rose-500/30' : 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/30'
+                    }`}>
+                      {rec.severity} Priority
+                    </span>
+                  </div>
+
+                  <p className="text-slate-300">
+                    <strong className="text-amber-400">Finding: </strong>
+                    {rec.finding}
+                  </p>
+                  <p className="text-slate-400">
+                    <strong className="text-slate-300">Reason: </strong>
+                    {rec.reason}
+                  </p>
+                  <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-sentinel-850 mt-2">
+                    <span className="text-emerald-300 font-medium">
+                      <strong>Next Action: </strong>
+                      {rec.actionableRecommendation}
+                    </span>
+                    <button
+                      onClick={() => navigateTo(rec.targetPage as any)}
+                      className="px-4 py-2 rounded-xl bg-electric-600 hover:bg-electric-500 text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition shrink-0"
+                    >
+                      <span>Open Targeted Drill</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Assessment Limitations Disclaimer */}
       <div className="p-4 rounded-xl bg-sentinel-950 border border-sentinel-850 text-xs text-slate-500 leading-relaxed space-y-1">

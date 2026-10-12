@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
-import { UserProfile, SupportedLanguage } from '../types/user';
+import { UserProfile, SupportedLanguage, FontSize, UserAudienceCategory, UserPreferences } from '../types/user';
 import { Competency, AssessmentRubric } from '../types/skills';
 import { ChallengeSubmission, DiagnosticChallenge, DiagnosticResult } from '../types/assessment';
 import { MissionId, MissionAttempt } from '../types/missions';
@@ -21,7 +21,11 @@ export type AppPage =
   | 'practice'
   | 'dashboard'
   | 'portfolio'
-  | 'profile';
+  | 'profile'
+  | 'challenges'
+  | 'topics'
+  | 'lab'
+  | 'explore';
 
 interface AppContextType {
   currentPage: AppPage;
@@ -30,9 +34,30 @@ interface AppContextType {
   competencies: Competency[];
   language: SupportedLanguage;
   setLanguage: (lang: SupportedLanguage) => void;
+  fontSize: FontSize;
+  setFontSize: (size: FontSize) => void;
   t: (key: string) => string;
   theme: 'dark' | 'light';
   toggleTheme: () => void;
+  isAssistantOpen: boolean;
+  openAssistant: () => void;
+  closeAssistant: () => void;
+
+  // Sidebar Layout
+  isSidebarCollapsed: boolean;
+  toggleSidebar: () => void;
+  setSidebarCollapsed: (collapsed: boolean) => void;
+
+  // Onboarding Modal
+  isOnboardingOpen: boolean;
+  openOnboarding: () => void;
+  closeOnboarding: () => void;
+  updateUserAudience: (category: UserAudienceCategory, preferences?: Partial<UserPreferences>) => void;
+
+  // Multi-Domain Assessment Runner
+  activeAssessmentId: string | null;
+  startAssessment: (assessmentId: string) => void;
+  closeAssessment: () => void;
   
   // Diagnostic State
   diagnosticChallenges: DiagnosticChallenge[];
@@ -72,6 +97,59 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [currentChallengeIndex, setCurrentChallengeIndex] = useState<number>(() => StorageService.getActiveDiagnosticIndex());
   const [diagnosticSubmissions, setDiagnosticSubmissions] = useState<ChallengeSubmission[]>(() => StorageService.getDiagnosticSubmissions());
   const [diagnosticResult, setDiagnosticResult] = useState<DiagnosticResult | null>(() => StorageService.getDiagnosticResult());
+
+  const [isAssistantOpen, setIsAssistantOpen] = useState<boolean>(false);
+  const openAssistant = () => setIsAssistantOpen(true);
+  const closeAssistant = () => setIsAssistantOpen(false);
+
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
+  const toggleSidebar = () => setIsSidebarCollapsed(prev => !prev);
+
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState<boolean>(false);
+  const openOnboarding = () => setIsOnboardingOpen(true);
+  const closeOnboarding = () => setIsOnboardingOpen(false);
+
+  const [activeAssessmentId, setActiveAssessmentId] = useState<string | null>(null);
+  const startAssessment = (assessmentId: string) => setActiveAssessmentId(assessmentId);
+  const closeAssessment = () => setActiveAssessmentId(null);
+
+  // Sync document root data-font-size, lang, and theme
+  useEffect(() => {
+    const root = document.documentElement;
+    const currentFont = profile.preferences.fontSize || 'md';
+    const currentTheme = profile.preferences.theme || 'dark';
+    root.setAttribute('data-font-size', currentFont);
+    root.setAttribute('lang', profile.preferences.language || 'en');
+    
+    if (currentTheme === 'light') {
+      root.classList.remove('dark');
+      root.style.colorScheme = 'light';
+    } else {
+      root.classList.add('dark');
+      root.style.colorScheme = 'dark';
+    }
+  }, [profile.preferences.fontSize, profile.preferences.language, profile.preferences.theme]);
+
+  // Hash-based browser navigation support
+  useEffect(() => {
+    const validPages: AppPage[] = [
+      'landing', 'discovery', 'radar', 'radar_results',
+      'missions', 'mission_workspace', 'practice',
+      'dashboard', 'portfolio', 'profile',
+      'challenges', 'topics', 'lab', 'explore'
+    ];
+
+    const syncHashToPage = () => {
+      const hash = window.location.hash.replace(/^#\/?/, '') as AppPage;
+      if (hash && validPages.includes(hash)) {
+        setCurrentPage(hash);
+      }
+    };
+
+    syncHashToPage();
+    window.addEventListener('hashchange', syncHashToPage);
+    return () => window.removeEventListener('hashchange', syncHashToPage);
+  }, []);
 
   // Listen to profile updates
   useEffect(() => {
@@ -128,6 +206,28 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }));
   };
 
+  const setFontSize = (size: FontSize) => {
+    setProfile(prev => ({
+      ...prev,
+      preferences: {
+        ...prev.preferences,
+        fontSize: size
+      }
+    }));
+  };
+
+  const updateUserAudience = (category: UserAudienceCategory, prefs?: Partial<UserPreferences>) => {
+    setProfile(prev => ({
+      ...prev,
+      preferences: {
+        ...prev.preferences,
+        audienceCategory: category,
+        hasCompletedOnboarding: true,
+        ...(prefs || {})
+      }
+    }));
+  };
+
   const toggleTheme = () => {
     setProfile(prev => {
       const newTheme = prev.preferences.theme === 'dark' ? 'light' : 'dark';
@@ -161,6 +261,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
     }
     setCurrentPage(targetPage);
+    try {
+      window.location.hash = targetPage;
+    } catch (e) {}
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -354,9 +457,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         competencies,
         language: profile.preferences.language,
         setLanguage,
+        fontSize: profile.preferences.fontSize || 'md',
+        setFontSize,
         t,
         theme: profile.preferences.theme,
         toggleTheme,
+        isAssistantOpen,
+        openAssistant,
+        closeAssistant,
+        isSidebarCollapsed,
+        toggleSidebar,
+        setSidebarCollapsed: setIsSidebarCollapsed,
+        isOnboardingOpen,
+        openOnboarding,
+        closeOnboarding,
+        updateUserAudience,
+        activeAssessmentId,
+        startAssessment,
+        closeAssessment,
         diagnosticChallenges,
         currentChallengeIndex,
         diagnosticSubmissions,

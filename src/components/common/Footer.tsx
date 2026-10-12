@@ -4,19 +4,19 @@ import { Logo } from './Logo';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="border-t border-sentinel-850 bg-sentinel-950 text-slate-400 text-sm mt-20">
+    <footer className="border-t border-sentinel-800 bg-sentinel-950 text-slate-600 dark:text-slate-400 text-sm mt-20 transition-colors duration-200">
       {/* Community Anti-Fraud & Cyber Emergency Callout */}
-      <div className="border-b border-sentinel-850/60 bg-sentinel-900/40">
+      <div className="border-b border-sentinel-800 bg-sentinel-900/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400">
+            <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-500 dark:text-amber-400">
               <AlertTriangle className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-white tracking-wide">
+              <p className="text-xs font-semibold text-slate-900 dark:text-white tracking-wide">
                 Community Engagement Project (CEP) — Citizen Digital Safety Initiative
               </p>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Facing financial cyber fraud in India? Report immediately to the National Cyber Crime Portal or call official helpline.
               </p>
             </div>
@@ -58,20 +58,20 @@ export const Footer: React.FC = () => {
 
         {/* Quick Assessment Tracks */}
         <div className="space-y-3">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200">Assessment Tracks</h4>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">Assessment Tracks</h4>
           <ul className="space-y-2 text-xs">
-            <li><span className="text-slate-400 hover:text-slate-200 cursor-pointer">Skill Radar Diagnostic (6 Domains)</span></li>
-            <li><span className="text-slate-400 hover:text-slate-200 cursor-pointer">Cyber Fraud Investigator</span></li>
-            <li><span className="text-slate-400 hover:text-slate-200 cursor-pointer">Broken Application Debugger</span></li>
-            <li><span className="text-slate-400 hover:text-slate-200 cursor-pointer">Network CLI Troubleshooting</span></li>
-            <li><span className="text-slate-400 hover:text-slate-200 cursor-pointer">OWASP IDOR AppSec Analyst</span></li>
-            <li><span className="text-slate-400 hover:text-slate-200 cursor-pointer">Production Incident Responder</span></li>
+            <li><span className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer">Skill Radar Diagnostic (6 Domains)</span></li>
+            <li><span className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer">Cyber Fraud Investigator</span></li>
+            <li><span className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer">Broken Application Debugger</span></li>
+            <li><span className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer">Network CLI Troubleshooting</span></li>
+            <li><span className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer">OWASP IDOR AppSec Analyst</span></li>
+            <li><span className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer">Production Incident Responder</span></li>
           </ul>
         </div>
 
         {/* Ethical Limitations & Disclaimers */}
         <div className="space-y-3">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200">Ethical Standards</h4>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">Ethical Standards</h4>
           <p className="text-[11px] leading-relaxed text-slate-500">
             DigiSentinel measures demonstrated task performance in simulated scenarios. The platform does not certify official statutory competence, predict hiring decisions, or issue government-recognized credentials.
           </p>

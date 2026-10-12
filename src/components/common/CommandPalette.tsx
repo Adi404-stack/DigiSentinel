@@ -32,9 +32,36 @@ interface PaletteItem {
   shortcut?: string;
 }
 
-export const CommandPalette: React.FC = () => {
+interface CommandPaletteProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export const CommandPalette: React.FC<CommandPaletteProps> = ({
+  isOpen: externalIsOpen,
+  onClose: externalOnClose
+}) => {
   const { navigateTo, setLanguage, toggleTheme, resetAllDemoData, theme } = useApp();
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
+  
+  const handleClose = () => {
+    if (externalOnClose) {
+      externalOnClose();
+    }
+    setInternalIsOpen(false);
+  };
+
+  const handleToggle = () => {
+    if (isOpen) {
+      handleClose();
+    } else {
+      if (externalIsOpen === undefined) {
+        setInternalIsOpen(true);
+      }
+    }
+  };
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -43,11 +70,11 @@ export const CommandPalette: React.FC = () => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
-        setIsOpen(prev => !prev);
+        handleToggle();
         soundService.playClick();
       } else if (e.key === 'Escape' && isOpen) {
         e.preventDefault();
-        setIsOpen(false);
+        handleClose();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -55,6 +82,15 @@ export const CommandPalette: React.FC = () => {
   }, [isOpen]);
 
   const items: PaletteItem[] = [
+    {
+      id: 'nav_explore',
+      category: 'Navigation',
+      title: 'Explore Assessments Catalog',
+      description: 'Discover evaluations for Students, Farmers, Business Owners, and Professionals',
+      icon: Compass,
+      shortcut: 'E',
+      action: () => navigateTo('explore')
+    },
     // Navigation
     {
       id: 'nav_radar',
@@ -100,10 +136,37 @@ export const CommandPalette: React.FC = () => {
       action: () => navigateTo('dashboard')
     },
     {
+      id: 'nav_challenges',
+      category: 'Navigation',
+      title: 'Daily Challenge Arena',
+      description: 'Scheduled scenario drill with multi-level progressive hints',
+      icon: Radar,
+      shortcut: 'C',
+      action: () => navigateTo('challenges')
+    },
+    {
+      id: 'nav_topics',
+      category: 'Navigation',
+      title: 'Topic Mastery & Learning Paths',
+      description: 'Curriculum modules across Cyber, Privacy, Fraud, and Diagnostics',
+      icon: BookOpen,
+      shortcut: 'T',
+      action: () => navigateTo('topics')
+    },
+    {
+      id: 'nav_lab',
+      category: 'Navigation',
+      title: 'Digital Safety Lab',
+      description: '6 defensive simulations: Phishing, Passwords, Privacy, and Code',
+      icon: ShieldAlert,
+      shortcut: 'L',
+      action: () => navigateTo('lab')
+    },
+    {
       id: 'nav_portfolio',
       category: 'Navigation',
       title: 'Verified Skill Portfolio',
-      description: 'Inspect completion rubrics and export PDF certificate',
+      description: 'Inspect completion rubrics and export evidence summary',
       icon: Award,
       shortcut: 'P',
       action: () => navigateTo('portfolio')
@@ -216,15 +279,21 @@ export const CommandPalette: React.FC = () => {
   const handleSelect = (item: PaletteItem) => {
     soundService.playClick();
     item.action();
-    setIsOpen(false);
+    handleClose();
     setSearchQuery('');
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-start justify-center pt-20 px-4 animate-in fade-in duration-150">
-      <div className="w-full max-w-2xl rounded-2xl bg-sentinel-900 border border-sentinel-700 shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
+    <div
+      onClick={handleClose}
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-start justify-center pt-20 px-4 animate-in fade-in duration-150"
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        className="w-full max-w-2xl rounded-2xl bg-slate-900 border border-slate-700 shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
+      >
         {/* Search Input Bar */}
         <div className="p-4 border-b border-sentinel-800 flex items-center gap-3 bg-sentinel-950">
           <Search className="w-5 h-5 text-electric-400 shrink-0" />

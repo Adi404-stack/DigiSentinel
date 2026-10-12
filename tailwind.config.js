@@ -37,13 +37,16 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['Inter', '"Noto Sans Devanagari"', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['"Space Grotesk"', '"Noto Sans Devanagari"', 'system-ui', '-apple-system', 'sans-serif'],
         mono: ['JetBrains Mono', 'Fira Code', 'Courier New', 'monospace'],
       },
       boxShadow: {
-        'glow-blue': '0 0 25px -5px rgba(59, 130, 246, 0.35)',
+        'glow-blue': '0 0 25px -5px rgba(56, 189, 248, 0.35)',
         'glow-violet': '0 0 25px -5px rgba(139, 92, 246, 0.35)',
         'glow-cyan': '0 0 25px -5px rgba(6, 182, 212, 0.35)',
+        'subtle': '0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px -1px rgba(0, 0, 0, 0.3)',
+        'card': '0 4px 20px -2px rgba(0, 0, 0, 0.5)',
       },
       animation: {
         'pulse-subtle': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
